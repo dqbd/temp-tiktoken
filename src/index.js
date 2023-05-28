@@ -1,12 +1,15 @@
-import { getEncoding } from "js-tiktoken";
+import { get_encoding, init } from "tiktoken/init";
 
-function component() {
-    const element = document.createElement('div');
-  
-    const enc = getEncoding("cl100k_base");
-    element.innerHTML = enc.decode(enc.encode("Hello world")) + " " + enc.encode("Hello world")
-  
-    return element;
+async function main() {
+  const wasm = fetch('./tiktoken_bg.wasm')
+  await init((imports) => WebAssembly.instantiate(wasm, imports));
+
+  const encoding = get_encoding("cl100k_base");
+  const tokens = encoding.encode("hello world");
+  console.log(tokens, encoding.decode(tokens))
+  encoding.free();
 }
+
+main();
   
 document.body.appendChild(component());
